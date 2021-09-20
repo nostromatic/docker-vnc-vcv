@@ -46,6 +46,6 @@ Applications starts with a simple user: `user`, but this user has `sudo` privile
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary 
 
 - to install it in [Dockerfile_ratpoison](Dockerfile_ratpoison) at line 15: `RUN	apt-get install -y --no-install-recommends firefox notepadqq`
-- to run it in [startup.sh](startup.sh) script file. See example lien 22: `echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc`
+- to run it in [startup.sh](startup.sh) script file. See example line 22: `echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc`
 
 For `Xfce` example, just install the applciation in [Dockerfile_xfce4](Dockerfile_xfce4). It should be accessible in Xfce menu.
