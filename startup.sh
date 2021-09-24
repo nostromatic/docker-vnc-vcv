@@ -34,8 +34,10 @@ chmod +x ~/.xinitrc
 
 # We read the command-line parameters
 if [ $# -ne 0 ] ; then
-	echo "Available variables:"
-	echo "VNC_PASSWORD, ADDITIONNAL_PROGRAMS"
+	if [ "${1}" = "help" ] ; then
+		echo "Available variables:"
+		echo "VNC_PASSWORD, VNC_SIZE, ADDITIONNAL_PROGRAMS"
+	fi
 fi
 # We start VNC server
 DISPLAY=:0

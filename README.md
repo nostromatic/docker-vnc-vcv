@@ -49,3 +49,13 @@ In the `ratpoison` example a `firefox` browser is started in the image. To use a
 - to run it in [startup.sh](startup.sh) script file. See example line 22: `echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc`
 
 For `Xfce` example, just install the applciation in [Dockerfile_xfce4](Dockerfile_xfce4). It should be accessible in Xfce menu.
+
+### Configuration
+
+Some variables can be passed to the `docker run` command to modify image behavior.
+
+| Name                 | Description                                     |
+| -------------------- | ------------------------------------------------|
+| VNC_PASSWORD         | Set a VNC password (default is none)            |
+| VNC_SIZE             | Define the VNC screen size                      |
+| ADDITIONNAL_PROGRAMS | Automatically starts a program (ratpoison only) |
