@@ -6,6 +6,8 @@ VNC_PARAMS=""
 # We prepare VNC
 mkdir ~/.vnc
 
+VNC_SIZE=${VNC_SIZE:-1280x1024}
+
 # We add a password to VNC
 if [ "X${VNC_PASSWORD}" != "X" ] ; then
 	echo "init password"
@@ -15,6 +17,8 @@ fi
 # We set the screen size
 if [ "X${VNC_SIZE}" != "X" ] ; then
 	VNC_PARAMS=${VNC_PARAMS}" -geometry "${VNC_SIZE}
+	sudo sed -i -E 's/XVFBARGS="-screen 0 [0-9]+x[0-9]+x[0-9]+"/XVFBARGS="-screen 0 '${VNC_SIZE}'x24"/' /bin/xvfb-run
+	grep "^XVFBARGS" /bin/xvfb-run
 fi
 
 if [ $(which ratpoison 2>/dev/null | wc -l) -ne 0 ] ; then
