@@ -57,5 +57,5 @@ Some variables can be passed to the `docker run` command to modify image behavio
 | Name                 | Description                                     |
 | -------------------- | ------------------------------------------------|
 | VNC_PASSWORD         | Set a VNC password (default is none)            |
-| VNC_SIZE             | Define the VNC screen size                      |
+| VNC_SIZE             | Define the VNC screen size (default 1280x1024)  |
 | ADDITIONNAL_PROGRAMS | Automatically starts a program (ratpoison only) |

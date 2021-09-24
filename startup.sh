@@ -37,6 +37,7 @@ if [ $# -ne 0 ] ; then
 	if [ "${1}" = "help" ] ; then
 		echo "Available variables:"
 		echo "VNC_PASSWORD, VNC_SIZE, ADDITIONNAL_PROGRAMS"
+		exit 0
 	fi
 fi
 # We start VNC server
