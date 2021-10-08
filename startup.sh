@@ -16,7 +16,6 @@ if [ "X${VNC_PASSWORD}" != "X" ] ; then
 fi
 # We set the screen size
 if [ "X${VNC_SIZE}" != "X" ] ; then
-	VNC_PARAMS=${VNC_PARAMS}" -geometry "${VNC_SIZE}
 	sudo sed -i -E 's/XVFBARGS="-screen 0 [0-9]+x[0-9]+x[0-9]+"/XVFBARGS="-screen 0 '${VNC_SIZE}'x24"/' /bin/xvfb-run
 	grep "^XVFBARGS" /bin/xvfb-run
 fi
@@ -45,7 +44,8 @@ if [ $# -ne 0 ] ; then
 	fi
 fi
 # We start VNC server
-DISPLAY=:0
+export FD_GEOM=${VNC_SIZE}		# To init a screen display when using Xvfb
+export DISPLAY=:0
 x11vnc -create -forever ${VNC_PARAMS} &
 
 # We start noVNC
