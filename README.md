@@ -10,52 +10,43 @@ The easiest combo is to run
 - a Window manager
 into an Ubuntu base image.
 
-It is possible to choose a any windows manager, but some are lighter than others. Below, there will be two simple examples with light ones:
-- [ratpoison](http://www.nongnu.org/ratpoison/), it produce a 1.1Gb final image
-- [Xfce](https://www.xfce.org/), it produces a 1.9Gb final image
+It is possible to choose any windows manager, but some are lighter than others. Below, there will be two simple examples with light ones:
+- [ratpoison](http://www.nongnu.org/ratpoison/)
+- [Xfce](https://www.xfce.org/)
 
-## Build images
+The final image size is 1.9Go.
+
+## Build image
 
 When building the image it possible to pass a specific timezone
 
-### Build docker-vnc-ratpoison
-
-    docker build . -f Dockerfile_ratpoison -t docker-vnc-ratpoison --build-arg TZ=Europe/Paris
-
-### Build docker-vnc-xfce4
-
-    docker build . -f Dockerfile_xfce4 -t docker-vnc-xfce4 --build-arg TZ=Europe/Paris
+    docker build . -f Dockerfile -t docker-vnc-xfce4 --build-arg TZ=Europe/Paris
 
 ## Usage
 
-The built images use standard ports:
+The built image use standard ports:
 - 5900 for VNC access
 - 6080 for noVNC website
 
 So that for browser access the full address is [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html).  
 Applications starts with a simple user: `user`, but this user has `sudo` priviledges.  
 
-### Start docker-vnc-ratpoison
-
-    docker run -it --rm -p 6080:6080 -p 5900:5900 --name docker-vnc-ratpoison docker-vnc-ratpoison
-
 ### Start docker+vnc+xfce4
 
     docker run -it --rm -p 6080:6080 -p 5900:5900 --name docker-vnc-xfce4 -e LANG=fr_FR.UTF-8 docker-vnc-xfce4
-
-In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary 
-
-- to install it in [Dockerfile_ratpoison](Dockerfile_ratpoison) at line 15: `RUN	apt-get install -y --no-install-recommends firefox notepadqq`
-- to run it in [startup.sh](startup.sh) script file. See example line 22: `echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc`
-
-For `Xfce` example, just install the applciation in [Dockerfile_xfce4](Dockerfile_xfce4). It should be accessible in Xfce menu.
 
 ### Configuration
 
 Some variables can be passed to the `docker run` command to modify image behavior.
 
-| Name                 | Description                                     |
-| -------------------- | ------------------------------------------------|
-| VNC_PASSWORD         | Set a VNC password (default is none)            |
-| VNC_SIZE             | Define the VNC screen size (default 1280x1024)  |
-| ADDITIONNAL_PROGRAMS | Automatically starts a program (ratpoison only) |
+| Name                         | Description                                              |
+| ---------------------------- | ---------------------------------------------------------|
+| DESKTOP_ADDITIONAL_PROGRAMS  | Automatically starts a program (ratpoison only)          |
+| DESKTOP_ENV                  | Choose desktop environment (between ratpoison and xfce4) |
+| DESKTOP_VNC_PASSWORD         | Set a VNC password (default is none)                     |
+| DESKTOP_SIZE                 | Define the screen size (default 1280x1024)               |
+
+In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary 
+
+- to install it in [Dockerfile](Dockerfile) at line 26: `RUN	apt-get install -y --no-install-recommends firefox notepadqq`
+- to run it in [startup.sh](startup.sh) script file. See example line 31: `echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc`

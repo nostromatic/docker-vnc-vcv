@@ -14,14 +14,15 @@ RUN	apt-get install -y --no-install-recommends          \
 		novnc                                       \
 		websockify
 
-# And finally the xfce4 desktop environment
+# And finally xfce4 and ratpoison desktop environments
 RUN	apt-get install -y --no-install-recommends          \
 		dbus-x11                                    \
 	&& apt-get install -y                               \
+		ratpoison                                   \
 		xfce4                                       \
 		xserver-xorg-video-dummy
 
-# We can add additionnal GUI program (ex: firefox)
+# We can add additional GUI program (ex: firefox)
 RUN	apt-get install -y --no-install-recommends firefox notepadqq
 RUN	apt-get install -y --no-install-recommends mlocate
 
