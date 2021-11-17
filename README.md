@@ -38,13 +38,13 @@ Applications starts with a simple user: `user`, but this user has `sudo` privile
 
 ### Start docker+vnc+xfce4
 
-    docker run --rm \
-      --interactive \
-      --tty \
-      --publish 6080:6080 \
-      --publish 5900:5900 \
-      --name docker-vnc-xfce4 \
-      --env LANG=fr_FR.UTF-8 \
+    docker run --rm           \
+      --interactive           \
+      --tty                   \
+      --publish 6080:6080     \
+      --publish 5900:5900     \
+      --name desktop          \
+      --env LANG=fr_FR.UTF-8  \
       docker-vnc-xfce4
 
 ### Configuration
@@ -55,23 +55,37 @@ Some variables can be passed to the `docker run` command to modify image behavio
 | ---------------------------- | ---------------------------------------------------------|
 | DESKTOP_ADDITIONAL_PROGRAMS  | Automatically starts a program (ratpoison only)          |
 | DESKTOP_ENV                  | Choose desktop environment (between ratpoison and xfce4) |
-| DESKTOP_VNC_PASSWORD         | Set a VNC password (default is none)                     |
+| DESKTOP_KEYBOARD_LAYOUT      | Specify default keyboard layout (format: layout:variant) |
 | DESKTOP_SIZE                 | Define the screen size (default 1280x1024)               |
+| DESKTOP_VNC_PASSWORD         | Set a VNC password (default is none)                     |
+
+_Example_: run Xfce4 in french
+
+    docker run --rm                             \
+      --interactive                             \
+      --tty                                     \
+      --publish 6080:6080                       \
+      --publish 5900:5900                       \
+      --name desktop                            \
+      --env DESKTOP_ENV=xfce4                   \
+      --env LANG=fr_FR.UTF-8                    \
+      --env DESKTOP_KEYBOARD_LAYOUT="fr/azerty" \
+      docker-vnc-xfce4
 
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
 
 - first install it in [Dockerfile](Dockerfile) at line 26: `RUN	apt-get install -y --no-install-recommends firefox notepadqq` (here we add `notepadqq`)
 - then run it, setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
 
-Example: run ratpoison with notepadqq in an interactive container
+_Example_: run ratpoison with notepadqq in an interactive container
 
-    docker run --rm \
-      --interactive \
-      --tty \
-      --publish 6080:6080 \
-      --publish 5900:5900 \
-      --name docker-vnc-xfce4 \
-      --env LANG=fr_FR.UTF-8 \
-      --env DESKTOP_ENV=ratpoison \
+    docker run --rm                                        \
+      --interactive                                        \
+      --tty                                                \
+      --publish 6080:6080                                  \
+      --publish 5900:5900                                  \
+      --name desktop                                       \
+      --env LANG=fr_FR.UTF-8                               \
+      --env DESKTOP_ENV=ratpoison                          \
       --env DESKTOP_ADDITIONAL_PROGRAMS=/usr/bin/notepadqq \
       docker-vnc-xfce4 /bin/bash

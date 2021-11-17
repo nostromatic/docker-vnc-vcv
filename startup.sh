@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# We update apt
+sudo apt-get update > /dev/null &
+
 # We check all container parameters
 DESKTOP_VNC_PARAMS=""
 
@@ -17,11 +20,13 @@ if [ "X${DESKTOP_VNC_PASSWORD}" != "X" ] ; then
 fi
 # We set the screen size
 if [ "X${DESKTOP_SIZE}" != "X" ] ; then
+	echo "set screen size"
 	sudo sed -i -E 's/XVFBARGS="-screen 0 [0-9]+x[0-9]+x[0-9]+"/XVFBARGS="-screen 0 '${DESKTOP_SIZE}'x24"/' /bin/xvfb-run
 	grep "^XVFBARGS" /bin/xvfb-run
 fi
 
 if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
+	echo "configure ratpoison"
 	# We run firefox at ratpoison startup
 	echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc
 	# We run ratpoison at VNC server startup
@@ -31,8 +36,33 @@ if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
 		echo "exec ${DESKTOP_ADDITIONAL_PROGRAMS}" >> ~/.ratpoisonrc
 	fi
 elif  [ "X${DESKTOP_ENV}" = "Xxfce4" ] ; then
+	echo "configure Xfce4"
 	# We run xfce4 at VNC server startup
 	echo "exec /usr/bin/startxfce4" >> ~/.xinitrc
+	# We set keyboard
+	if [ "X${DESKTOP_KEYBOARD_LAYOUT}" != "X" ] ; then
+	  test -d ~/.config/xfce4/xfconf/xfce-perchannel-xml || mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
+      layout=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#/.*$##')
+	  variant=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#^.*/##')
+	  echo "set ${layout}-${variant} keyboard"
+	  printf '<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="keyboard-layout" version="1.0">
+  <property name="Default" type="empty">
+    <property name="XkbDisable" type="bool" value="false"/>
+    <property name="XkbLayout" type="string" value="'${layout}'"/>
+    <property name="XkbVariant" type="string" value="'${variant}'"/>
+  </property>
+</channel>' > ~/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml
+	fi
+	# We set background image
+	if [ "X${DESKTOP_BACKGROUND_IMAGE}" != "X" ] ; then
+	  if [ $(echo "${DESKTOP_BACKGROUND_IMAGE}" | grep -E "^https?:\/\/" | wc -l) -eq 1 ] ; then
+		name=$(echo "${DESKTOP_BACKGROUND_IMAGE}" | sed 's#^.*/##')
+	    echo "Set backgroud image to ${DESKTOP_BACKGROUND_IMAGE} / ${name}"
+		wget "${DESKTOP_BACKGROUND_IMAGE}"
+	  fi
+	fi
 else 
 	echo "Unknown desktop environment" >&2
 	exit 1
@@ -43,7 +73,7 @@ chmod +x ~/.xinitrc
 if [ $# -ne 0 ] ; then
 	if [ "${1}" = "help" ] ; then
 		echo "Available variables:"
-		echo "DESKTOP_VNC_PASSWORD, DESKTOP_SIZE, DESKTOP_ADDITIONAL_PROGRAMS"
+		echo "DESKTOP_ENV, DESKTOP_VNC_PASSWORD, DESKTOP_SIZE, DESKTOP_ADDITIONAL_PROGRAMS"
 		exit 0
 	fi
 fi
