@@ -1,5 +1,7 @@
 # First we get and update last Ubuntu image
 FROM    ubuntu
+LABEL   maintainer="cyd@9bis.com"
+
 ARG     TZ=${TZ:-Etc/UTC}
 ARG     DEBIAN_FRONTEND=noninteractive
 RUN	    \

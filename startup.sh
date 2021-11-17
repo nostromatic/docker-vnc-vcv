@@ -55,6 +55,7 @@ x11vnc -create -forever ${DESKTOP_VNC_PARAMS} &
 # We start noVNC
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
 
+# Is there an option
 if [ $# -ne 0 ] ; then
 	$@
 else 

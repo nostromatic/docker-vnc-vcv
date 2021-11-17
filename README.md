@@ -16,7 +16,7 @@ It is possible to choose any windows manager, but some are lighter than others. 
 
 The final image size is 1.9Go.
 
-## Build image
+## Build the docker image
 
 When building the image it possible to pass a specific timezone
 
@@ -25,10 +25,12 @@ When building the image it possible to pass a specific timezone
       --tag docker-vnc-xfce4 \
       --build-arg TZ=Europe/Paris
 
+It tooks few minutes to make it.
+
 ## Usage
 
-The built image use standard ports:
-- 5900 for VNC access
+The built image expose standard ports:
+- 5900 for VNC access ([VNC clients](https://www.realvnc.com/en/connect/download/viewer/))
 - 6080 for noVNC website
 
 So that for browser access the full address is [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html).  
@@ -61,7 +63,7 @@ In the `ratpoison` example a `firefox` browser is started in the image. To use a
 - first install it in [Dockerfile](Dockerfile) at line 26: `RUN	apt-get install -y --no-install-recommends firefox notepadqq` (here we add `notepadqq`)
 - then run it, setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
 
-Example to run ratpoison with notepadqq
+Example: run ratpoison with notepadqq in an interactive container
 
     docker run --rm \
       --interactive \
@@ -72,4 +74,4 @@ Example to run ratpoison with notepadqq
       --env LANG=fr_FR.UTF-8 \
       --env DESKTOP_ENV=ratpoison \
       --env DESKTOP_ADDITIONAL_PROGRAMS=/usr/bin/notepadqq \
-      docker-vnc-xfce4
+      docker-vnc-xfce4 /bin/bash
