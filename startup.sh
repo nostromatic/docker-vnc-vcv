@@ -28,7 +28,7 @@ if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
 	echo "exec ratpoison" >> ~/.xinitrc
 	# We start additinnal programs
 	if [ "X${DESKTOP_ADDITIONAL_PROGRAMS}" != "X" ] ; then
-		echo "exec ${DESKTOP_ADDITIONNAL_PROGRAMS}" >> ~/.ratpoisonrc
+		echo "exec ${DESKTOP_ADDITIONAL_PROGRAMS}" >> ~/.ratpoisonrc
 	fi
 elif  [ "X${DESKTOP_ENV}" = "Xxfce4" ] ; then
 	# We run xfce4 at VNC server startup

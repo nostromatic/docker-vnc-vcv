@@ -20,7 +20,10 @@ The final image size is 1.9Go.
 
 When building the image it possible to pass a specific timezone
 
-    docker build . -f Dockerfile -t docker-vnc-xfce4 --build-arg TZ=Europe/Paris
+    docker build . \
+      --file Dockerfile \
+      --tag docker-vnc-xfce4 \
+      --build-arg TZ=Europe/Paris
 
 ## Usage
 
@@ -33,7 +36,14 @@ Applications starts with a simple user: `user`, but this user has `sudo` privile
 
 ### Start docker+vnc+xfce4
 
-    docker run -it --rm -p 6080:6080 -p 5900:5900 --name docker-vnc-xfce4 -e LANG=fr_FR.UTF-8 docker-vnc-xfce4
+    docker run --rm \
+      --interactive \
+      --tty \
+      --publish 6080:6080 \
+      --publish 5900:5900 \
+      --name docker-vnc-xfce4 \
+      --env LANG=fr_FR.UTF-8 \
+      docker-vnc-xfce4
 
 ### Configuration
 
@@ -46,7 +56,20 @@ Some variables can be passed to the `docker run` command to modify image behavio
 | DESKTOP_VNC_PASSWORD         | Set a VNC password (default is none)                     |
 | DESKTOP_SIZE                 | Define the screen size (default 1280x1024)               |
 
-In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary 
+In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
 
-- to install it in [Dockerfile](Dockerfile) at line 26: `RUN	apt-get install -y --no-install-recommends firefox notepadqq`
-- to run it in [startup.sh](startup.sh) script file. See example line 31: `echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc`
+- first install it in [Dockerfile](Dockerfile) at line 26: `RUN	apt-get install -y --no-install-recommends firefox notepadqq` (here we add `notepadqq`)
+- then run it, setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
+
+Example to run ratpoison with notepadqq
+
+    docker run --rm \
+      --interactive \
+      --tty \
+      --publish 6080:6080 \
+      --publish 5900:5900 \
+      --name docker-vnc-xfce4 \
+      --env LANG=fr_FR.UTF-8 \
+      --env DESKTOP_ENV=ratpoison \
+      --env DESKTOP_ADDITIONAL_PROGRAMS=/usr/bin/notepadqq \
+      docker-vnc-xfce4
