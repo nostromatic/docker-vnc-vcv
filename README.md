@@ -55,7 +55,7 @@ Some variables can be passed to the `docker run` command to modify image behavio
 | ---------------------------- | ---------------------------------------------------------|
 | DESKTOP_ADDITIONAL_PROGRAMS  | Automatically starts a program (ratpoison only)          |
 | DESKTOP_ENV                  | Choose desktop environment (between ratpoison and xfce4) |
-| DESKTOP_KEYBOARD_LAYOUT      | Specify default keyboard layout (format: layout:variant) |
+| DESKTOP_KEYBOARD_LAYOUT      | Specify default keyboard layout (format: layout/variant) |
 | DESKTOP_SIZE                 | Define the screen size (default 1280x1024)               |
 | DESKTOP_VNC_PASSWORD         | Set a VNC password (default is none)                     |
 
