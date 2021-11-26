@@ -70,6 +70,7 @@ _Example_: run Xfce4 in french
       --env DESKTOP_ENV=xfce4                   \
       --env LANG=fr_FR.UTF-8                    \
       --env DESKTOP_KEYBOARD_LAYOUT="fr/azerty" \
+      --env DESKTOP_SIZE="1920x1080"            \
       docker-vnc-xfce4
 
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
