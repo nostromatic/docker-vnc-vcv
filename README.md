@@ -25,16 +25,16 @@ When building the image it possible to pass a specific timezone
       --tag docker-vnc-xfce4 \
       --build-arg TZ=Europe/Paris
 
-It tooks few minutes to make it.
+It takes few minutes to make it.
 
 ## Usage
 
 The built image expose standard ports:
-- 5900 for VNC access ([VNC clients](https://www.realvnc.com/en/connect/download/viewer/))
+- 5900 for VNC access (here are [VNC clients](https://www.realvnc.com/en/connect/download/viewer/))
 - 6080 for noVNC website
 
 So that for browser access the full address is [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html).  
-Applications starts with a simple user: `user`, but this user has `sudo` priviledges.  
+Applications starts with a simple user context: `user` (with password `user01`), and this user has `sudo` priviledges.  
 
 ### Start docker+vnc+xfce4
 

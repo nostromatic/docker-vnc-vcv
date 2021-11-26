@@ -42,7 +42,8 @@ RUN     \
 ENV     USR=user
 RUN     \
         groupadd ${USR}                                \
-        && useradd -g ${USR} -m ${USR}                 \
+        && useradd -m -g ${USR} -s /bin/bash ${USR}    \
+        && echo "${USR}:${USR}01" | chpasswd           \
         && apt-get install -y --no-install-recommends  \
           sudo                                         \
         && echo ${USR}'     ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
