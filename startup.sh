@@ -30,7 +30,7 @@ if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
 	# We run firefox at ratpoison startup
 	echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc
 	# We run ratpoison at VNC server startup
-	echo "exec ratpoison" >> ~/.xinitrc
+	echo "exec ratpoison >/dev/null 2>&1" >> ~/.xinitrc
 	# We start additinnal programs
 	if [ "X${DESKTOP_ADDITIONAL_PROGRAMS}" != "X" ] ; then
 		echo "exec ${DESKTOP_ADDITIONAL_PROGRAMS}" >> ~/.ratpoisonrc
@@ -38,7 +38,7 @@ if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
 elif  [ "X${DESKTOP_ENV}" = "Xxfce4" ] ; then
 	echo "configure Xfce4"
 	# We run xfce4 at VNC server startup
-	echo "exec /usr/bin/startxfce4" >> ~/.xinitrc
+	echo "exec /usr/bin/startxfce4 >/dev/null 2>&1" >> ~/.xinitrc
 	# We set keyboard
 	if [ "X${DESKTOP_KEYBOARD_LAYOUT}" != "X" ] ; then
 	  test -d ~/.config/xfce4/xfconf/xfce-perchannel-xml || mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
@@ -69,6 +69,9 @@ else
 fi
 chmod +x ~/.xinitrc
 
+# We set repeat is on
+sudo sed -i 's/tcp/tcp -ardelay 200 -arinterval 20/' /etc/X11/xinit/xserverrc
+
 # We read the command-line parameters
 if [ $# -ne 0 ] ; then
 	if [ "${1}" = "help" ] ; then
@@ -79,15 +82,14 @@ if [ $# -ne 0 ] ; then
 fi
 # We start VNC server
 export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
-export DISPLAY=:0
-x11vnc -create -forever ${DESKTOP_VNC_PARAMS} &
+x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS} &
 
 # We start noVNC
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
 
 # Is there an option
 if [ $# -ne 0 ] ; then
-	$@
+	exec "$@"
 else 
 	tail -f /dev/null 
 fi

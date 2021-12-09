@@ -24,7 +24,7 @@ RUN     \
           dbus-x11                                     \
         && apt-get install -y                          \
           ratpoison                                    \
-          xfce4                                        \
+          xfce4 xfce4-terminal                         \
           xserver-xorg-video-dummy
 
 # We can add additional GUI program (ex: firefox)
@@ -36,6 +36,7 @@ RUN     \
 # We add some tools
 RUN     \
         apt-get install -y --no-install-recommends     \
+          curl                                         \
           mlocate
 
 # We add a simple user with sudo rights
