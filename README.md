@@ -61,16 +61,17 @@ Some variables can be passed to the `docker run` command to modify image behavio
 
 _Example_: run Xfce4 in french
 
-    docker run --rm                             \
-      --interactive                             \
-      --tty                                     \
-      --publish 6080:6080                       \
-      --publish 5900:5900                       \
-      --name desktop                            \
-      --env DESKTOP_ENV=xfce4                   \
-      --env LANG=fr_FR.UTF-8                    \
-      --env DESKTOP_KEYBOARD_LAYOUT="fr/azerty" \
-      --env DESKTOP_SIZE="1920x1080"            \
+    docker run --rm                                        \
+      --interactive                                        \
+      --tty                                                \
+      --privileged                                         \
+      --publish 6080:6080                                  \
+      --publish 5900:5900                                  \
+      --name desktop                                       \
+      --env DESKTOP_ENV=xfce4                              \
+      --env LANG=fr_FR.UTF-8                               \
+      --env DESKTOP_KEYBOARD_LAYOUT="fr/azerty"            \
+      --env DESKTOP_SIZE="1920x1080"                       \
       docker-vnc-xfce4
 
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
@@ -83,6 +84,7 @@ _Example_: run ratpoison with notepadqq in an interactive container
     docker run --rm                                        \
       --interactive                                        \
       --tty                                                \
+      --privileged                                         \
       --publish 6080:6080                                  \
       --publish 5900:5900                                  \
       --name desktop                                       \

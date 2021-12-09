@@ -83,9 +83,16 @@ fi
 # We start VNC server
 export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
 x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS} &
+X11VNC_PID=$!
 
 # We start noVNC
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
+WEBSOCKIFY_PID=$!
+
+# Prepare addons
+echo "wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg | gpg --dearmor | sudo dd of=/usr/share/keyrings/vscodium-archive-keyring.gpg
+echo 'deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://download.vscodium.com/debs vscodium main' | sudo tee /etc/apt/sources.list.d/vscodium.list
+sudo apt update && sudo apt install codium" > ~/codium_install
 
 # Is there an option
 if [ $# -ne 0 ] ; then
@@ -93,3 +100,7 @@ if [ $# -ne 0 ] ; then
 else 
 	tail -f /dev/null 
 fi
+
+kill $WEBSOCKIFY_PID
+kill $X11VNC_PID
+wait
