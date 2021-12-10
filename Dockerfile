@@ -69,5 +69,6 @@ RUN     \
 # We change user
 USER    ${USR}
 WORKDIR /home/${USR}
+COPY    bgimage.jpg /usr/share/backgrounds/xfce/bgimage.jpg
 
 ENTRYPOINT [ "/startup.sh" ]

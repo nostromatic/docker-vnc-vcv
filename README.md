@@ -38,6 +38,8 @@ Applications starts with a simple user context: `user` (with password `user01`),
 
 ### Start docker+vnc+xfce4
 
+The most simple startup command is
+
     docker run --rm           \
       --interactive           \
       --tty                   \
@@ -54,25 +56,29 @@ Some variables can be passed to the `docker run` command to modify image behavio
 | Name                         | Description                                              |
 | ---------------------------- | ---------------------------------------------------------|
 | DESKTOP_ADDITIONAL_PROGRAMS  | Automatically starts a program (ratpoison only)          |
+| DESKTOP_BACKGROUND_IMAGE     | Default background image (can be an url)                 |
 | DESKTOP_ENV                  | Choose desktop environment (between ratpoison and xfce4) |
 | DESKTOP_KEYBOARD_LAYOUT      | Specify default keyboard layout (format: layout/variant) |
 | DESKTOP_SIZE                 | Define the screen size (default 1280x1024)               |
+| DESKTOP_THEME                | Set the default Xfce4 theme                              |
 | DESKTOP_VNC_PASSWORD         | Set a VNC password (default is none)                     |
 
-_Example_: run Xfce4 in french
+_Example_: run Xfce4 in french, with desktop personal settings
 
-    docker run --rm                                        \
-      --interactive                                        \
-      --tty                                                \
-      --privileged                                         \
-      --publish 6080:6080                                  \
-      --publish 5900:5900                                  \
-      --name desktop                                       \
-      --env DESKTOP_ENV=xfce4                              \
-      --env LANG=fr_FR.UTF-8                               \
-      --env DESKTOP_KEYBOARD_LAYOUT="fr/azerty"            \
-      --env DESKTOP_SIZE="1920x1080"                       \
-      docker-vnc-xfce4
+    docker run --rm                                                                                               \
+      --interactive                                                                                               \
+      --tty                                                                                                       \
+      --privileged                                                                                                \
+      --publish 6080:6080                                                                                         \
+      --publish 5900:5900                                                                                         \
+      --name desktop                                                                                              \
+      --env DESKTOP_ENV=xfce4                                                                                     \
+      --env LANG=fr_FR.UTF-8                                                                                      \
+      --env DESKTOP_KEYBOARD_LAYOUT="fr/azerty"                                                                   \
+      --env DESKTOP_SIZE="1920x1080"                                                                              \
+      --env DESKTOP_THEME="Greybird-dark"                                                                         \
+      --env DESKTOP_BACKGROUND_IMAGE="https://upload.wikimedia.org/wikipedia/commons/9/96/Alberi_AlpediSiusi.JPG" \
+      docker-vnc-xfce4 /bin/bash
 
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
 

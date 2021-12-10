@@ -55,13 +55,89 @@ elif  [ "X${DESKTOP_ENV}" = "Xxfce4" ] ; then
   </property>
 </channel>' > ~/.config/xfce4/xfconf/xfce-perchannel-xml/keyboard-layout.xml
 	fi
+	# We set theme
+	if [ "X${DESKTOP_THEME}" != "X" ] ; then
+	test -d ~/.config/xfce4/xfconf/xfce-perchannel-xml || mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
+	printf '<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="'${DESKTOP_THEME}'"/>
+    <property name="IconThemeName" type="empty"/>
+    <property name="DoubleClickTime" type="empty"/>
+    <property name="DoubleClickDistance" type="empty"/>
+    <property name="DndDragThreshold" type="empty"/>
+    <property name="CursorBlink" type="empty"/>
+    <property name="CursorBlinkTime" type="empty"/>
+    <property name="SoundThemeName" type="empty"/>
+    <property name="EnableEventSounds" type="empty"/>
+    <property name="EnableInputFeedbackSounds" type="empty"/>
+  </property>
+  <property name="Xft" type="empty">
+    <property name="DPI" type="empty"/>
+    <property name="Antialias" type="empty"/>
+    <property name="Hinting" type="empty"/>
+    <property name="HintStyle" type="empty"/>
+    <property name="RGBA" type="empty"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="CanChangeAccels" type="empty"/>
+    <property name="ColorPalette" type="empty"/>
+    <property name="FontName" type="empty"/>
+    <property name="MonospaceFontName" type="empty"/>
+    <property name="IconSizes" type="empty"/>
+    <property name="KeyThemeName" type="empty"/>
+    <property name="ToolbarStyle" type="empty"/>
+    <property name="ToolbarIconSize" type="empty"/>
+    <property name="MenuImages" type="empty"/>
+    <property name="ButtonImages" type="empty"/>
+    <property name="MenuBarAccel" type="empty"/>
+    <property name="CursorThemeName" type="empty"/>
+    <property name="CursorThemeSize" type="empty"/>
+    <property name="DecorationLayout" type="empty"/>
+  </property>
+  <property name="Gdk" type="empty">
+    <property name="WindowScalingFactor" type="empty"/>
+  </property>
+</channel>' > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+	fi
 	# We set background image
 	if [ "X${DESKTOP_BACKGROUND_IMAGE}" != "X" ] ; then
 	  if [ $(echo "${DESKTOP_BACKGROUND_IMAGE}" | grep -E "^https?:\/\/" | wc -l) -eq 1 ] ; then
-		name=$(echo "${DESKTOP_BACKGROUND_IMAGE}" | sed 's#^.*/##')
-	    echo "Set backgroud image to ${DESKTOP_BACKGROUND_IMAGE} / ${name}"
-		wget "${DESKTOP_BACKGROUND_IMAGE}"
+		wget "${DESKTOP_BACKGROUND_IMAGE}" -O "${HOME}/bgimage.jpg"
+		DESKTOP_BACKGROUND_IMAGE="${HOME}/bgimage.jpg"
 	  fi
+	test -d ~/.config/xfce4/xfconf/xfce-perchannel-xml || mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
+	test -f "${DESKTOP_BACKGROUND_IMAGE}" && printf '<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorscreen" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="'${DESKTOP_BACKGROUND_IMAGE}'"/>
+        </property>
+        <property name="workspace1" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="'${DESKTOP_BACKGROUND_IMAGE}'"/>
+        </property>
+        <property name="workspace2" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="'${DESKTOP_BACKGROUND_IMAGE}'"/>
+        </property>
+        <property name="workspace3" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="'${DESKTOP_BACKGROUND_IMAGE}'"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>' > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 	fi
 else 
 	echo "Unknown desktop environment" >&2
@@ -76,7 +152,7 @@ sudo sed -i 's/tcp/tcp -ardelay 200 -arinterval 20/' /etc/X11/xinit/xserverrc
 if [ $# -ne 0 ] ; then
 	if [ "${1}" = "help" ] ; then
 		echo "Available variables:"
-		echo "DESKTOP_ENV, DESKTOP_VNC_PASSWORD, DESKTOP_SIZE, DESKTOP_ADDITIONAL_PROGRAMS"
+		echo "DESKTOP_ENV, DESKTOP_VNC_PASSWORD, DESKTOP_SIZE, DESKTOP_THEME, DESKTOP_ADDITIONAL_PROGRAMS"
 		exit 0
 	fi
 fi
