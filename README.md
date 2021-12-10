@@ -7,6 +7,7 @@ The easiest combo is to run
 - [Xvfb](https://www.x.org/releases/X11R7.6/doc/man/man1/Xvfb.1.xhtml) a virtual X server that can run on machines with no display hardware and no physical input devices. It emulates a dumb framebuffer using virtual memory
 - a [VNC server](https://github.com/LibVNC/x11vnc) to be able to access from everywhere
 - [noVNC](https://github.com/novnc/noVNC) + [websockify](https://github.com/novnc/websockify) that allow to do VNC through a browser
+- [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) to share audio device
 - a Window manager
 into an Ubuntu base image.
 
