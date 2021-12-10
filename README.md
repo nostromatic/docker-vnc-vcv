@@ -96,5 +96,8 @@ _Example_: run ratpoison with notepadqq in an interactive container
       --name desktop                                       \
       --env LANG=fr_FR.UTF-8                               \
       --env DESKTOP_ENV=ratpoison                          \
+      --env DESKTOP_SIZE="1024x800"                        \
       --env DESKTOP_ADDITIONAL_PROGRAMS=/usr/bin/notepadqq \
       docker-vnc-xfce4 /bin/bash
+
+For more informations on `ratpoison` desktop manager see [general use page](http://www.nongnu.org/ratpoison/doc/General-Use.html#General-Use).
