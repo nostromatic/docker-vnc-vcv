@@ -30,7 +30,9 @@ RUN     \
           dbus-x11                                       \
         && apt-get install -y                            \
           ratpoison                                      \
-          xfce4 xfce4-terminal                           \
+          xfce4 xfce4-terminal xfce4-eyes-plugin         \
+          xfce4-systemload-plugin xfce4-weather-plugin   \
+          xfce4-whiskermenu-plugin                       \
           xserver-xorg-video-dummy                       \
         && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
@@ -49,6 +51,11 @@ RUN     \
           curl                                           \
           mlocate                                        \
           sudo                                           \
+          vim                                            \
+          vlc                                            \
+          xz-utils                                       \
+          zip                                            \
+        && apt-get install -y thunar-archive-plugin      \
         && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 # We add sound
@@ -56,10 +63,13 @@ RUN     printf 'default-server = unix:/run/user/1000/pulse/native\nautospawn = n
 
 # We add a simple user with sudo rights
 ENV     USR=user
+ARG     USR_UID=${USER_UID:-1000}
+ARG     USR_GID=${USER_GID:-1000}
+
 RUN     \
-        groupadd ${USR}                                  \
-        && useradd -m -g ${USR} -s /bin/bash ${USR}      \
-        && echo "${USR}:${USR}01" | chpasswd             \
+        groupadd --gid ${USR_GID} ${USR}                                                \
+        && useradd --uid ${USR_UID} --create-home --gid ${USR} --shell /bin/bash ${USR} \
+        && echo "${USR}:${USR}01" | chpasswd                                            \
         && echo ${USR}'     ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Two ports are availables: 5900 for VNC client, and 6080 for browser access via websockify
@@ -69,8 +79,8 @@ EXPOSE  5900 6080
 RUN      if [ "X${TZ}" != "X" ] ; then if [ -f /usr/share/zoneinfo/${TZ} ] ; then rm -f /etc/localtime ; ln -s /usr/share/zoneinfo/${TZ} /etc/localtime ; fi ; fi
 
 # And here is the statup script, everything else is in there
-COPY    startup.sh /startup.sh
-RUN     chmod 755 /startup.sh
+COPY    entrypoint.sh /entrypoint.sh
+RUN     chmod 755 /entrypoint.sh
 
 # We do some specials
 RUN     \
@@ -82,4 +92,4 @@ USER    ${USR}
 WORKDIR /home/${USR}
 COPY    bgimage.jpg /usr/share/backgrounds/xfce/bgimage.jpg
 
-ENTRYPOINT [ "/startup.sh" ]
+ENTRYPOINT [ "/entrypoint.sh" ]

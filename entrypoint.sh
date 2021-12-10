@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# We set USER
+export USER=$(whoami)
+
 # We update apt
 sudo apt-get update > /dev/null &
 
@@ -158,12 +161,16 @@ if [ $# -ne 0 ] ; then
 fi
 
 # We set sound
-export PULSE_SERVER=unix:/run/user/1000/pulse/native
+export PULSE_SERVER=unix:/run/user/$(id -u)/pulse/native
 
 # We start VNC server
 export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
-x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS} &
-X11VNC_PID=$!
+{ 
+  while [ 1 ] ; do
+    x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS}
+    wait $!
+  done
+} &
 
 # We start noVNC
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
@@ -174,6 +181,12 @@ echo "wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master
 echo 'deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://download.vscodium.com/debs vscodium main' | sudo tee /etc/apt/sources.list.d/vscodium.list
 sudo apt update && sudo apt install codium" > ~/codium_install
 
+# Test for startup script
+test -f /startup.sh && {
+  chmod ugo+x /startup.sh
+  sudo /startup.sh
+}
+
 # Is there an option
 if [ $# -ne 0 ] ; then
 	exec "$@"
@@ -182,5 +195,4 @@ else
 fi
 
 kill $WEBSOCKIFY_PID
-kill $X11VNC_PID
 wait
