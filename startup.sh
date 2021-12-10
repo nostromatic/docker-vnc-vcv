@@ -156,6 +156,10 @@ if [ $# -ne 0 ] ; then
 		exit 0
 	fi
 fi
+
+# We set sound
+export PULSE_SERVER=unix:/run/user/1000/pulse/native
+
 # We start VNC server
 export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
 x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS} &

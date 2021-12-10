@@ -18,7 +18,7 @@ The final image size is 1.9Go.
 
 ## Build the docker image
 
-When building the image it possible to pass a specific timezone
+When building the image it possible to pass a personal timezone
 
     docker build . \
       --file Dockerfile \
@@ -63,11 +63,12 @@ Some variables can be passed to the `docker run` command to modify image behavio
 | DESKTOP_THEME                | Set the default Xfce4 theme                              |
 | DESKTOP_VNC_PASSWORD         | Set a VNC password (default is none)                     |
 
-_Example_: run Xfce4 in french, with desktop personal settings
+_Example_: run Xfce4 in french, with desktop personal settings and sound
 
     docker run --rm                                                                                               \
       --interactive                                                                                               \
       --tty                                                                                                       \
+      --volume /run/user/$(id -u)/pulse/native:/run/user/1000/pulse/native                                        \
       --privileged                                                                                                \
       --publish 6080:6080                                                                                         \
       --publish 5900:5900                                                                                         \
@@ -82,7 +83,7 @@ _Example_: run Xfce4 in french, with desktop personal settings
 
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
 
-- first install it in [Dockerfile](Dockerfile) at line 26: `RUN	apt-get install -y --no-install-recommends firefox notepadqq` (here we add `notepadqq`)
+- first install it in [Dockerfile](Dockerfile) at line 35: `RUN	apt-get install -y --no-install-recommends firefox notepadqq` (here we add `notepadqq`)
 - then run it, setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
 
 _Example_: run ratpoison with notepadqq in an interactive container
