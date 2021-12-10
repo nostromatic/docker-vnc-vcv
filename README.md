@@ -103,3 +103,7 @@ _Example_: run ratpoison with notepadqq in an interactive container
       docker-vnc-xfce4 /bin/bash
 
 For more informations on `ratpoison` desktop manager see [general use page](http://www.nongnu.org/ratpoison/doc/General-Use.html#General-Use).
+
+## Examples
+
+![](screencopy.png)
