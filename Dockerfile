@@ -49,6 +49,7 @@ RUN     \
         apt-get update                                   \
         && apt-get install -y --no-install-recommends    \
           curl                                           \
+          dumb-init                                      \
           mlocate                                        \
           sudo                                           \
           vim                                            \
@@ -92,4 +93,5 @@ USER    ${USR}
 WORKDIR /home/${USR}
 COPY    bgimage.jpg /usr/share/backgrounds/xfce/bgimage.jpg
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/entrypoint.sh" ]
+
