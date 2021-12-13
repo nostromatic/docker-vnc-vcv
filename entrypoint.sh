@@ -28,6 +28,9 @@ if [ "X${DESKTOP_SIZE}" != "X" ] ; then
 	grep "^XVFBARGS" /bin/xvfb-run
 fi
 
+# Init .xinitrc
+#printf 'autocutsel -fork -selection CLIPBOARD\nautocutsel -fork -selection PRIMARY\n' > ~/.xinitrc
+
 if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
 	echo "configure ratpoison"
 	# We run firefox at ratpoison startup
@@ -169,8 +172,13 @@ export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
   while [ 1 ] ; do
     x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS}
     wait $!
+    sleep 1
   done
 } &
+
+# We set clipboard
+test -d ~/.config/autostart || mkdir -p ~/.config/autostart
+cp /etc/xdg/autostart/xfce4-clipman-plugin-autostart.desktop ~/.config/autostart/xfce4-clipman-plugin-autostart.desktop
 
 # We start noVNC
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &

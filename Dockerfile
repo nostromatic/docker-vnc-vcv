@@ -10,7 +10,10 @@ RUN	    \
           apt-utils                                      \
           language-pack-fr                               \
           tzdata                                         \
-        && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+        && apt-get clean                                 \
+        && rm -rf /tmp/* /var/tmp/*                      \
+        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+
 
 # Second we install VNC, noVNC and websockify
 RUN     \
@@ -21,7 +24,9 @@ RUN     \
           xvfb                                           \
           novnc                                          \
           websockify                                     \
-        && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+        && apt-get clean                                 \
+        && rm -rf /tmp/* /var/tmp/*                      \
+        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # And finally xfce4 and ratpoison desktop environments
 RUN     \
@@ -32,9 +37,11 @@ RUN     \
           ratpoison                                      \
           xfce4 xfce4-terminal xfce4-eyes-plugin         \
           xfce4-systemload-plugin xfce4-weather-plugin   \
-          xfce4-whiskermenu-plugin                       \
+          xfce4-whiskermenu-plugin xfce4-clipman-plugin  \
           xserver-xorg-video-dummy                       \
-        && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+        && apt-get clean                                 \
+        && rm -rf /tmp/* /var/tmp/*                      \
+        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # We can add additional GUI program (ex: firefox)
 RUN     \
@@ -42,7 +49,9 @@ RUN     \
         && apt-get install -y --no-install-recommends    \
           firefox                                        \
           notepadqq                                      \
-        && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+        && apt-get clean                                 \
+        && rm -rf /tmp/* /var/tmp/*                      \
+        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # We add some tools
 RUN     \
@@ -51,13 +60,16 @@ RUN     \
           curl                                           \
           dumb-init                                      \
           mlocate                                        \
+          net-tools                                      \
           sudo                                           \
           vim                                            \
           vlc                                            \
           xz-utils                                       \
           zip                                            \
         && apt-get install -y thunar-archive-plugin      \
-        && rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+        && apt-get clean                                 \
+        && rm -rf /tmp/* /var/tmp/*                      \
+        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # We add sound
 RUN     printf 'default-server = unix:/run/user/1000/pulse/native\nautospawn = no\ndaemon-binary = /bin/true\nenable-shm = false' > /etc/pulse/client.conf
@@ -93,5 +105,5 @@ USER    ${USR}
 WORKDIR /home/${USR}
 COPY    bgimage.jpg /usr/share/backgrounds/xfce/bgimage.jpg
 
-ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/entrypoint.sh" ]
-
+#ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/entrypoint.sh" ]
+ENTRYPOINT [ "/entrypoint.sh" ]
