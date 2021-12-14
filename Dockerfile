@@ -11,6 +11,7 @@ RUN	    \
           language-pack-fr                               \
           tzdata                                         \
         && apt-get clean                                 \
+	&& apt-get autoremove -y                         \
         && rm -rf /tmp/* /var/tmp/*                      \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -25,6 +26,7 @@ RUN     \
           novnc                                          \
           websockify                                     \
         && apt-get clean                                 \
+	&& apt-get autoremove -y                         \
         && rm -rf /tmp/* /var/tmp/*                      \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -40,6 +42,7 @@ RUN     \
           xfce4-whiskermenu-plugin xfce4-clipman-plugin  \
           xserver-xorg-video-dummy                       \
         && apt-get clean                                 \
+	&& apt-get autoremove -y                         \
         && rm -rf /tmp/* /var/tmp/*                      \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -50,6 +53,7 @@ RUN     \
           firefox                                        \
           notepadqq                                      \
         && apt-get clean                                 \
+	&& apt-get autoremove -y                         \
         && rm -rf /tmp/* /var/tmp/*                      \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -68,6 +72,7 @@ RUN     \
           zip                                            \
         && apt-get install -y thunar-archive-plugin      \
         && apt-get clean                                 \
+	&& apt-get autoremove -y                         \
         && rm -rf /tmp/* /var/tmp/*                      \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
