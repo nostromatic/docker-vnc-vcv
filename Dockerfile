@@ -63,6 +63,7 @@ RUN     \
         && apt-get install -y --no-install-recommends    \
           curl                                           \
           dumb-init                                      \
+          figlet                                         \
           mlocate                                        \
           net-tools                                      \
           sudo                                           \
@@ -103,12 +104,18 @@ RUN     chmod 755 /entrypoint.sh
 # We do some specials
 RUN     \
         updatedb ;                                       \
-        apt-get clean
+        apt-get clean                                    \
+        && apt-get autoremove -y                         \
+        && rm -rf /tmp/* /var/tmp/*                      \
+        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # We change user
 USER    ${USR}
 WORKDIR /home/${USR}
+COPY    functions.sh /home/${USR}/.functions.sh
 COPY    bgimage.jpg /usr/share/backgrounds/xfce/bgimage.jpg
+RUN     \
+        printf 'if [[ $- = *i* ]] ; then test -f ~/.functions.sh && . ~/.functions.sh ; fi' >> /home/${USR}/.bashrc
 
 #ENTRYPOINT [ "/usr/bin/dumb-init", "--", "/entrypoint.sh" ]
 ENTRYPOINT [ "/entrypoint.sh" ]

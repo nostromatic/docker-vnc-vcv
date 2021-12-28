@@ -170,8 +170,8 @@ export PULSE_SERVER=unix:/run/user/$(id -u)/pulse/native
 export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
 { 
   while [ 1 ] ; do
+    figlet "x11vnc"
     x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS}
-    wait $!
     sleep 1
   done
 } &
@@ -181,6 +181,7 @@ test -d ~/.config/autostart || mkdir -p ~/.config/autostart
 cp /etc/xdg/autostart/xfce4-clipman-plugin-autostart.desktop ~/.config/autostart/xfce4-clipman-plugin-autostart.desktop
 
 # We start noVNC
+figlet websockify
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
 WEBSOCKIFY_PID=$!
 
