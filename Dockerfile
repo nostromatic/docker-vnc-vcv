@@ -64,6 +64,7 @@ RUN     \
           curl                                           \
           dumb-init                                      \
           figlet                                         \
+          jq                                             \
           mlocate                                        \
           net-tools                                      \
           sudo                                           \
