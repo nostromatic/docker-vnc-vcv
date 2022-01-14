@@ -41,13 +41,13 @@ Applications starts with a simple user context: `user` (with password `user01`),
 
 The most simple startup command is
 
-    docker run --rm           \
-      --interactive           \
-      --tty                   \
-      --publish 6080:6080     \
-      --publish 5900:5900     \
-      --name desktop          \
-      --env LANG=fr_FR.UTF-8  \
+    docker run --rm                    \
+      --interactive                    \
+      --tty                            \
+      --publish 6080:6080              \
+      --publish ${VNC_PORT:-5900}:5900 \
+      --name desktop                   \
+      --env LANG=fr_FR.UTF-8           \
       docker-vnc-xfce4
 
 ### Configuration
@@ -72,7 +72,7 @@ _Example_: run Xfce4 in french, with desktop personal settings and sound
       --volume /run/user/$(id -u)/pulse/native:/run/user/1000/pulse/native                                        \
       --privileged                                                                                                \
       --publish 6080:6080                                                                                         \
-      --publish 5900:5900                                                                                         \
+      --publish ${VNC_PORT:-5900}:5900                                                                            \
       --name desktop                                                                                              \
       --env DESKTOP_ENV=xfce4                                                                                     \
       --env LANG=fr_FR.UTF-8                                                                                      \
@@ -94,7 +94,7 @@ _Example_: run ratpoison with notepadqq in an interactive container
       --tty                                                \
       --privileged                                         \
       --publish 6080:6080                                  \
-      --publish 5900:5900                                  \
+      --publish ${VNC_PORT:-5900}:5900                     \
       --name desktop                                       \
       --env LANG=fr_FR.UTF-8                               \
       --env DESKTOP_ENV=ratpoison                          \

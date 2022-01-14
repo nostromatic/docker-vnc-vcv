@@ -4,7 +4,7 @@
 export USER=$(whoami)
 
 # We update apt
-sudo apt-get update > /dev/null &
+sudo update-ca-certificates && sudo apt-get update > /dev/null &
 
 # We check all container parameters
 DESKTOP_VNC_PARAMS=""
