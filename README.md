@@ -21,9 +21,9 @@ The final image size is 1.9Go.
 
 When building the image it possible to pass a personal timezone
 
-    docker build . \
-      --file Dockerfile \
-      --tag docker-vnc-xfce4 \
+    docker build .                \
+      --file Dockerfile           \
+      --tag docker-vnc-xfce4      \
       --build-arg TZ=Europe/Paris
 
 It takes few minutes to make it.
