@@ -8,8 +8,9 @@ The easiest combo is to run
 - a [VNC server](https://github.com/LibVNC/x11vnc) to be able to access from everywhere
 - [noVNC](https://github.com/novnc/noVNC) + [websockify](https://github.com/novnc/websockify) that allow to do VNC through a browser
 - [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) to share audio device
-- a Window manager
-into an Ubuntu base image.
+- a Window manager (see just below)
+
+into an [Ubuntu](https://ubuntu.com/) base image.
 
 It is possible to choose any windows manager, but some are lighter than others. Below, there will be two simple examples with light ones:
 - [ratpoison](http://www.nongnu.org/ratpoison/)
@@ -19,7 +20,7 @@ The final image size is 1.9Go.
 
 ## Build the docker image
 
-When building the image it possible to pass a personal timezone
+When building the image it is possible to specify a personal timezone
 
     docker build .                \
       --file Dockerfile           \
@@ -85,7 +86,7 @@ _Example_: run Xfce4 in french, with desktop personal settings and sound
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
 
 - first install it in [Dockerfile](Dockerfile) at line 44: `RUN	apt-get install -y --no-install-recommends firefox notepadqq` (here we add `notepadqq`)
-- then run it, setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
+- then run it, by setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
 
 _Example_: run ratpoison with notepadqq in an interactive container
 
