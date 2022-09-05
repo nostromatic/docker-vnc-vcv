@@ -83,24 +83,28 @@ _Example_: run Xfce4 in french, with desktop personal settings and sound
       --env DESKTOP_BACKGROUND_IMAGE="https://upload.wikimedia.org/wikipedia/commons/9/96/Alberi_AlpediSiusi.JPG" \
       docker-vnc-xfce4 /bin/bash
 
-In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
+In the `ratpoison` example a `firefox` browser is started in the image. 
 
-- first install it in [Dockerfile](Dockerfile) at line 103: `RUN	apt-get install ... notepadqq` (here we add `notepadqq`)
-- then run it, by setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
+To use another application it is necessary to
+- first install it, either
+    - in [Dockerfile](Dockerfile) at line 103: `RUN	apt-get install ... notepadqq` (here we add `notepadqq`)
+    - by setting variable `INSTALL_ADDITIONAL_PROGRAMS` at run
+- then run it, by setting it in variable `DESKTOP_ADDITIONAL_PROGRAMS`
 
-_Example_: run ratpoison with notepadqq in an interactive container
+_Example_: run ratpoison with spider cards games in an interactive container
 
-    docker run --rm                                        \
-      --interactive                                        \
-      --tty                                                \
-      --privileged                                         \
-      --publish 6080:6080                                  \
-      --publish ${VNC_PORT:-5900}:5900                     \
-      --name desktop                                       \
-      --env LANG=fr_FR.UTF-8                               \
-      --env DESKTOP_ENV=ratpoison                          \
-      --env DESKTOP_SIZE="1024x800"                        \
-      --env DESKTOP_ADDITIONAL_PROGRAMS=/usr/bin/notepadqq \
+    docker run --rm                                                             \
+      --interactive                                                             \
+      --tty                                                                     \
+      --privileged                                                              \
+      --publish 6080:6080                                                       \
+      --publish ${VNC_PORT:-5900}:5900                                          \
+      --name desktop                                                            \
+      --env LANG=fr_FR.UTF-8                                                    \
+      --env DESKTOP_ENV=ratpoison                                               \
+      --env DESKTOP_SIZE="1024x800"                                             \
+      --env INSTALL_ADDITIONAL_PROGRAMS=aisleriot                               \
+      --env DESKTOP_ADDITIONAL_PROGRAMS="/bin/sh -c '/usr/games/sol -v spider'" \
       docker-vnc-xfce4 /bin/bash
 
 For more informations on `ratpoison` desktop manager see [general use page](http://www.nongnu.org/ratpoison/doc/General-Use.html#General-Use).

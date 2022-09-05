@@ -6,7 +6,6 @@ export USER=$(whoami)
 # We update apt
 ls -lart /usr/local/share/ca-certificates
 sudo update-ca-certificates
-sudo apt-get update > /dev/null &
 
 # We check all container parameters
 DESKTOP_VNC_PARAMS=""
@@ -33,15 +32,23 @@ fi
 # Init .xinitrc
 #printf 'autocutsel -fork -selection CLIPBOARD\nautocutsel -fork -selection PRIMARY\n' > ~/.xinitrc
 
+# We install additionnal programs
+if [ "X${INSTALL_ADDITIONAL_PROGRAMS}" != "X" ] ; then
+  echo "Installing ${INSTALL_ADDITIONAL_PROGRAMS}..."
+  sudo apt-get update > /dev/null
+  sudo apt-get install -y ${INSTALL_ADDITIONAL_PROGRAMS}
+fi
+
 if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
 	echo "configure ratpoison"
-	# We run firefox at ratpoison startup
-	echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc
 	# We run ratpoison at VNC server startup
 	echo "exec ratpoison >/dev/null 2>&1" >> ~/.xinitrc
 	# We start additinnal programs
 	if [ "X${DESKTOP_ADDITIONAL_PROGRAMS}" != "X" ] ; then
 		echo "exec ${DESKTOP_ADDITIONAL_PROGRAMS}" >> ~/.ratpoisonrc
+  else
+  	# We run firefox at ratpoison startup
+  	echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc
 	fi
 elif  [ "X${DESKTOP_ENV}" = "Xxfce4" ] ; then
 	echo "configure Xfce4"
@@ -197,6 +204,9 @@ test -f /startup.sh && {
   chmod ugo+x /startup.sh
   sudo /startup.sh
 }
+
+# Run an apt update
+sudo apt-get update > /dev/null &
 
 # Is there an option
 if [ $# -ne 0 ] ; then
