@@ -1,11 +1,10 @@
 # First we get and update last Ubuntu image
-FROM    ubuntu:jammy
+FROM    ubuntu:focal
 LABEL   maintainer="cyd@9bis.com"
 
 ARG     PROXY_CERT 
 RUN     test -z "${PROXY_CERT}" || { echo "${PROXY_CERT}" | base64 -d | tee /usr/local/share/ca-certificates/ca-local.crt > /dev/null && update-ca-certificates ; }
 
-# We prepare environment
 ARG     TZ=${TZ:-Etc/UTC}
 ARG     DEBIAN_FRONTEND=noninteractive
 RUN     \
@@ -14,7 +13,6 @@ RUN     \
         && apt-get install -y                              \
           apt-utils                                        \
           language-pack-fr                                 \
-          software-properties-common                       \
           tzdata                                           \
         && apt-get clean                                   \
         && apt-get autoremove -y                           \
@@ -80,32 +78,18 @@ RUN     \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
         && echo "Install some tools OK" >&2
 
-# We install firefox, directly from Mozilla (not from snap)
+# We can add additional GUI programs (ex: firefox)
 RUN     \
-        echo "Install Firefox from Mozilla" >&2               \
-        && apt-get update                                     \
-        && add-apt-repository ppa:mozillateam/ppa             \
-        && printf '\nPackage: *\nPin: release o=LP-PPA-mozillateam\nPin-Priority: 1001\n' > /etc/apt/preferences.d/mozilla-firefox                     \
-        && printf 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' > /etc/apt/apt.conf.d/51unattended-upgrades-firefox \
-        && apt-get update                                     \
-        && apt-get install -y firefox --no-install-recommends \
-        && apt-get clean                                      \
-        && apt-get autoremove -y                              \
-        && rm -rf /tmp/* /var/tmp/*                           \
-        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*       \
-        && echo "Install Firefox from Mozilla OK" >&2
-
-# We can add additional GUI programs
-RUN     \
-        echo "Install additional GUI programs" >&2         \
+        echo "Install GUI programs, firefox" >&2           \
         && apt-get update                                  \
         && apt-get install -y --no-install-recommends      \
+          firefox                                          \
           notepadqq                                        \
         && apt-get clean                                   \
         && apt-get autoremove -y                           \
         && rm -rf /tmp/* /var/tmp/*                        \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
-        && echo "Install additional GUI programs OK" >&2
+        && echo "Install GUI programs, firefox OK" >&2
 
 # We add sound
 RUN     printf 'default-server = unix:/run/user/1000/pulse/native\nautospawn = no\ndaemon-binary = /bin/true\nenable-shm = false' > /etc/pulse/client.conf

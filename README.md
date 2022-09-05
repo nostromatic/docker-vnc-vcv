@@ -85,7 +85,7 @@ _Example_: run Xfce4 in french, with desktop personal settings and sound
 
 In the `ratpoison` example a `firefox` browser is started in the image. To use another application it is necessary to
 
-- first install it in [Dockerfile](Dockerfile) at line 44: `RUN	apt-get install -y --no-install-recommends firefox notepadqq` (here we add `notepadqq`)
+- first install it in [Dockerfile](Dockerfile) at line 103: `RUN	apt-get install ... notepadqq` (here we add `notepadqq`)
 - then run it, by setting it in `DESKTOP_ADDITIONAL_PROGRAMS`
 
 _Example_: run ratpoison with notepadqq in an interactive container
