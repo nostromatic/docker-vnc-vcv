@@ -1,4 +1,6 @@
-# docker-vnc-xfce4
+# docker-vnc-vcv
+
+This is a test project, you better check the [original code from cyd01](https://github.com/cyd01/docker-vnc-xfce4).
 
 ## Description
 
