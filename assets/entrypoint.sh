@@ -3,10 +3,6 @@
 # We set USER
 export USER=$(whoami)
 
-# We update apt
-ls -lart /usr/local/share/ca-certificates
-sudo update-ca-certificates
-
 # We check all container parameters
 DESKTOP_VNC_PARAMS=""
 
@@ -25,22 +21,30 @@ fi
 # We set the screen size
 if [ "X${DESKTOP_SIZE}" != "X" ] ; then
 	echo "set screen size"
-	sudo sed -i -E 's/XVFBARGS="-screen 0 [0-9]+x[0-9]+x[0-9]+"/XVFBARGS="-screen 0 '${DESKTOP_SIZE}'x24"/' /bin/xvfb-run
+	sed -i -E 's/XVFBARGS="-screen 0 [0-9]+x[0-9]+x[0-9]+"/XVFBARGS="-screen 0 '${DESKTOP_SIZE}'x24"/' /bin/xvfb-run
 	grep "^XVFBARGS" /bin/xvfb-run
 fi
 
 # Init .xinitrc
 #printf 'autocutsel -fork -selection CLIPBOARD\nautocutsel -fork -selection PRIMARY\n' > ~/.xinitrc
 
-# We install additionnal programs
-if [ "X${INSTALL_ADDITIONAL_PROGRAMS}" != "X" ] ; then
-  echo "Installing ${INSTALL_ADDITIONAL_PROGRAMS}..."
-  sudo apt-get update > /dev/null
-  sudo apt-get install -y ${INSTALL_ADDITIONAL_PROGRAMS}
-fi
-
-if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
-	echo "configure ratpoison"
+if [ "X${DESKTOP_ENV}" = "Xvcv" ] ; then
+  echo "Configuring VCV Rack"
+  # We run i3 at VNC server startup
+	echo "exec ~/Rack2Free/Rack >/dev/null 2>&1" >> ~/.xinitrc
+elif [ "X${DESKTOP_ENV}" = "Xi3" ] ; then
+  echo "Configuring i3"
+  # We run i3 at VNC server startup
+	echo "exec i3 >/dev/null 2>&1" >> ~/.xinitrc
+  mkdir -p ~/.config/i3
+  cp /etc/i3/config ~/.config/i3/
+  echo "exec --no-startup-id i3-msg 'workspace 1:VCV; exec bash ~/Rack2Free/Rack.sh'" >> ~/.config/i3/config
+  if [ "X${DESKTOP_KEYBOARD_LAYOUT}" != "X" ] ; then
+    layout=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#/.*$##')
+	  variant=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#^.*/##')
+  fi
+elif [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
+	echo "Configuring ratpoison"
 	# We run ratpoison at VNC server startup
 	echo "exec ratpoison >/dev/null 2>&1" >> ~/.xinitrc
 	# We start additinnal programs
@@ -51,13 +55,13 @@ if [ "X${DESKTOP_ENV}" = "Xratpoison" ] ; then
   	echo "exec firefox" > ~/.ratpoisonrc && chmod +x ~/.ratpoisonrc
 	fi
 elif  [ "X${DESKTOP_ENV}" = "Xxfce4" ] ; then
-	echo "configure Xfce4"
+	echo "Configuring Xfce4"
 	# We run xfce4 at VNC server startup
 	echo "exec /usr/bin/startxfce4 >/dev/null 2>&1" >> ~/.xinitrc
 	# We set keyboard
 	if [ "X${DESKTOP_KEYBOARD_LAYOUT}" != "X" ] ; then
 	  test -d ~/.config/xfce4/xfconf/xfce-perchannel-xml || mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml
-      layout=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#/.*$##')
+    layout=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#/.*$##')
 	  variant=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#^.*/##')
 	  echo "set ${layout}-${variant} keyboard"
 	  printf '<?xml version="1.0" encoding="UTF-8"?>
@@ -153,15 +157,20 @@ elif  [ "X${DESKTOP_ENV}" = "Xxfce4" ] ; then
     </property>
   </property>
 </channel>' > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+
+  # We set clipboard
+  test -d ~/.config/autostart || mkdir -p ~/.config/autostart
+  cp /etc/xdg/autostart/xfce4-clipman-plugin-autostart.desktop ~/.config/autostart/xfce4-clipman-plugin-autostart.desktop
 	fi
 else 
 	echo "Unknown desktop environment" >&2
 	exit 1
 fi
+
 chmod +x ~/.xinitrc
 
 # We set repeat is on
-sudo sed -i 's/tcp/tcp -ardelay 200 -arinterval 20/' /etc/X11/xinit/xserverrc
+#sudo sed -i 's/tcp/tcp -ardelay 200 -arinterval 20/' /etc/X11/xinit/xserverrc
 
 # We read the command-line parameters
 if [ $# -ne 0 ] ; then
@@ -173,7 +182,7 @@ if [ $# -ne 0 ] ; then
 fi
 
 # We set sound
-export PULSE_SERVER=unix:/run/user/$(id -u)/pulse/native
+#export PULSE_SERVER=unix:/run/user/$(id -u)/pulse/native
 
 # We start VNC server
 export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
@@ -185,28 +194,10 @@ export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
   done
 } &
 
-# We set clipboard
-test -d ~/.config/autostart || mkdir -p ~/.config/autostart
-cp /etc/xdg/autostart/xfce4-clipman-plugin-autostart.desktop ~/.config/autostart/xfce4-clipman-plugin-autostart.desktop
-
 # We start noVNC
 figlet websockify
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
 WEBSOCKIFY_PID=$!
-
-# Prepare addons
-echo "wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg | gpg --dearmor | sudo dd of=/usr/share/keyrings/vscodium-archive-keyring.gpg
-echo 'deb [ signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg ] https://download.vscodium.com/debs vscodium main' | sudo tee /etc/apt/sources.list.d/vscodium.list
-sudo apt update && sudo apt install codium" > ~/codium_install
-
-# Test for startup script
-test -f /startup.sh && {
-  chmod ugo+x /startup.sh
-  sudo /startup.sh
-}
-
-# Run an apt update
-sudo apt-get update > /dev/null &
 
 # Is there an option
 if [ $# -ne 0 ] ; then
