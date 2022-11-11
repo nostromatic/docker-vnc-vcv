@@ -20,15 +20,32 @@ It is possible to choose any windows manager, but some are lighter than others. 
 
 The final image size is 1.9Go.
 
+## Prepare the host
+
+### GPU support
+Install cuda for WSL
+```
+https://docs.nvidia.com/cuda/wsl-user-guide/index.html
+```
+Then test it :
+```
+sudo docker run --gpus all --env NVIDIA_DISABLE_REQUIRE=1 nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+```
+
+Interesting doc: https://www.openrobots.org/morse/doc/latest/headless.html
+
+
+
 ## Build the docker image
 
 When building the image it is possible to specify a personal timezone
-
-    docker build .                \
-      --file Dockerfile           \
-      --tag docker-vnc-xfce4      \
-      --build-arg TZ=Europe/Paris
-
+```
+docker build .                \
+  --file Dockerfile           \
+  --tag docker-vnc-i3         \
+  --build-arg TZ=Europe/Paris \
+  --build-arg LANG=fr_FR.UTF-8
+```
 It takes few minutes to make it.
 
 ## Usage
@@ -36,9 +53,33 @@ It takes few minutes to make it.
 The built image expose standard ports:
 - 5900 for VNC access (here are [VNC clients](https://www.realvnc.com/en/connect/download/viewer/))
 - 6080 for noVNC website
+- 4444 for ffmpeg stream
 
 So that for browser access the full address is [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html).  
 Applications starts with a simple user context: `user` (with password `user01`), and this user has `sudo` priviledges.  
+
+### Start with i3
+```
+docker run --rm                                   \
+  --gpus all                                      \
+  --interactive                                   \
+  --tty                                           \
+  --publish 4444:4444                             \
+  --publish 6080:6080                             \
+  --publish ${VNC_PORT:-5900}:5900                \
+  --name desktopi3                                \
+  --env DESKTOP_ENV=i3                            \
+  --env DESKTOP_KEYBOARD_LAYOUT="fr/azerty"       \
+  --env DESKTOP_SIZE="1920x900"                   \
+  docker-vnc-i3 /bin/bash
+```
+```
+/usr/bin/ffmpeg -threads 8 \
+-video_size 1920x900 -f x11grab -i :20 -framerate 60 \
+-codec:v libx264 -pix_fmt yuv420p -preset veryfast -fflags nobuffer \
+-f flv -drop_pkts_on_overflow 1 -attempt_recovery 1 -recovery_wait_time 1 -rtmp_buffer 60 -listen 1 rtmp://0.0.0.0:4444/stream
+```
+https://wiki.archlinux.org/title/sway
 
 ### Start docker+vnc+xfce4
 

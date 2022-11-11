@@ -31,14 +31,16 @@ fi
 if [ "X${DESKTOP_ENV}" = "Xvcv" ] ; then
   echo "Configuring VCV Rack"
   # We run i3 at VNC server startup
-	echo "exec ~/Rack2Free/Rack >/dev/null 2>&1" >> ~/.xinitrc
+	echo "exec bash ~/Rack2Free/Rack.sh" >> ~/.xinitrc
 elif [ "X${DESKTOP_ENV}" = "Xi3" ] ; then
   echo "Configuring i3"
   # We run i3 at VNC server startup
 	echo "exec i3 >/dev/null 2>&1" >> ~/.xinitrc
   mkdir -p ~/.config/i3
   cp /etc/i3/config ~/.config/i3/
-  echo "exec --no-startup-id i3-msg 'workspace 1:VCV; exec bash ~/Rack2Free/Rack.sh'" >> ~/.config/i3/config
+  ~/.config/sway/config
+  printf 'output HEADLESS-1 {\npos 1920,0\nmode ${DESKTOP_SIZE}@60Hz\n}' > ~/.config/sway/config
+  #echo "exec --no-startup-id i3-msg 'workspace 1:VCV; exec bash ~/Rack2Free/Rack.sh'" >> ~/.config/i3/config
   if [ "X${DESKTOP_KEYBOARD_LAYOUT}" != "X" ] ; then
     layout=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#/.*$##')
 	  variant=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#^.*/##')
@@ -198,6 +200,9 @@ export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
 figlet websockify
 websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
 WEBSOCKIFY_PID=$!
+
+# Run an apt update
+sudo apt-get update > /dev/null &
 
 # Is there an option
 if [ $# -ne 0 ] ; then

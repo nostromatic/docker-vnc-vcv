@@ -26,7 +26,8 @@ RUN     \
         && apt-get update                                  \
         && apt-get install -y --no-install-recommends      \
           libpulse0                                        \
-          x11vnc                                           \
+#          x11vnc                                           \
+          wayvnc                                           \
           xvfb                                             \
           novnc                                            \
           websockify                                       \
@@ -57,11 +58,12 @@ RUN     \
 RUN     \
          echo "Install i3" >&2                              \
          && apt-get update                                  \
-         && apt-get install -y --no-install-recommends      \
-           dbus-x11                                         \
+#         && apt-get install -y --no-install-recommends      \
+#           dbus-x11                                         \
          && apt-get install -y                              \
            i3                                               \
-           xserver-xorg-video-dummy                         \
+#           xserver-xorg-video-dummy                         \
+           sway                                             \
          && apt-get clean                                   \
          && apt-get autoremove -y                           \
          && rm -rf /tmp/* /var/tmp/*                        \
@@ -81,6 +83,7 @@ RUN     \
           vim                                              \
           unzip                                            \
           ffmpeg                                           \
+          mesa-utils                                       \
         && apt-get clean                                   \
         && apt-get autoremove -y                           \
         && rm -rf /tmp/* /var/tmp/*                        \
