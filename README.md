@@ -36,27 +36,17 @@ Interesting doc: https://www.openrobots.org/morse/doc/latest/headless.html
 
 
 
-## Build the docker image
+## Build the docker image for i3
 
 When building the image it is possible to specify a personal timezone
 ```
 docker build .                \
-  --file Dockerfile           \
+  --file Dockerfile.i3           \
   --tag docker-vnc-i3         \
   --build-arg TZ=Europe/Paris \
   --build-arg LANG=fr_FR.UTF-8
 ```
 It takes few minutes to make it.
-
-## Usage
-
-The built image expose standard ports:
-- 5900 for VNC access (here are [VNC clients](https://www.realvnc.com/en/connect/download/viewer/))
-- 6080 for noVNC website
-- 4444 for ffmpeg stream
-
-So that for browser access the full address is [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html).  
-Applications starts with a simple user context: `user` (with password `user01`), and this user has `sudo` priviledges.  
 
 ### Start with i3
 ```
@@ -73,28 +63,27 @@ docker run --rm                                   \
   --env DESKTOP_SIZE="1920x900"                   \
   docker-vnc-i3 /bin/bash
 ```
+
+## Usage
+
+The built image expose standard ports:
+- 5900 for VNC access (here are [VNC clients](https://www.realvnc.com/en/connect/download/viewer/))
+- 6080 for noVNC website
+- 4444 for ffmpeg stream
+
+So that for browser access the full address is [http://localhost:6080/vnc.html](http://localhost:6080/vnc.html).  
+Applications starts with a simple user context: `user` (with password `user01`), and this user has `sudo` priviledges.  
+
+## ffmpeg stream
+
 ```
 /usr/bin/ffmpeg -threads 8 \
 -video_size 1920x900 -f x11grab -i :20 -framerate 60 \
 -codec:v libx264 -pix_fmt yuv420p -preset veryfast -fflags nobuffer \
 -f flv -drop_pkts_on_overflow 1 -attempt_recovery 1 -recovery_wait_time 1 -rtmp_buffer 60 -listen 1 rtmp://0.0.0.0:4444/stream
 ```
-https://wiki.archlinux.org/title/sway
 
-### Start docker+vnc+xfce4
-
-The most simple startup command is
-
-    docker run --rm                    \
-      --interactive                    \
-      --tty                            \
-      --publish 6080:6080              \
-      --publish ${VNC_PORT:-5900}:5900 \
-      --name desktop                   \
-      --env LANG=fr_FR.UTF-8           \
-      docker-vnc-xfce4
-
-### Configuration
+### (not applicable) Configuration
 
 Some variables can be passed to the `docker run` command to modify image behavior.
 
@@ -125,29 +114,3 @@ _Example_: run Xfce4 in french, with desktop personal settings and sound
       --env DESKTOP_THEME="Greybird-dark"                                                                         \
       --env DESKTOP_BACKGROUND_IMAGE="https://upload.wikimedia.org/wikipedia/commons/9/96/Alberi_AlpediSiusi.JPG" \
       docker-vnc-xfce4 /bin/bash
-
-In the `ratpoison` example a `firefox` browser is started in the image. 
-
-To use another application it is necessary to
-- first install it, either
-    - in [Dockerfile](Dockerfile) at line 103: `RUN	apt-get install ... notepadqq` (here we add `notepadqq`)
-    - by setting variable `INSTALL_ADDITIONAL_PROGRAMS` at run
-- then run it, by setting it in variable `DESKTOP_ADDITIONAL_PROGRAMS`
-
-_Example_: run ratpoison with spider cards games in an interactive container
-
-    docker run --rm                                                             \
-      --interactive                                                             \
-      --tty                                                                     \
-      --privileged                                                              \
-      --publish 6080:6080                                                       \
-      --publish ${VNC_PORT:-5900}:5900                                          \
-      --name desktop                                                            \
-      --env LANG=fr_FR.UTF-8                                                    \
-      --env DESKTOP_ENV=ratpoison                                               \
-      --env DESKTOP_SIZE="1024x800"                                             \
-      --env INSTALL_ADDITIONAL_PROGRAMS=aisleriot                               \
-      --env DESKTOP_ADDITIONAL_PROGRAMS="/bin/sh -c '/usr/games/sol -v spider'" \
-      docker-vnc-xfce4 /bin/bash
-
-For more informations on `ratpoison` desktop manager see [general use page](http://www.nongnu.org/ratpoison/doc/General-Use.html#General-Use).

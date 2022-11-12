@@ -20,11 +20,11 @@ if [ "X${DESKTOP_VNC_PASSWORD}" != "X" ] ; then
 fi
 
 # We set the screen size
-#if [ "X${DESKTOP_SIZE}" != "X" ] ; then
-#	echo "set screen size"
-#	sed -i -E 's/XVFBARGS="-screen 0 [0-9]+x[0-9]+x[0-9]+"/XVFBARGS="-screen 0 '${DESKTOP_SIZE}'x24"/' /bin/xvfb-run
-#	grep "^XVFBARGS" /bin/xvfb-run
-#fi
+if [ "X${DESKTOP_SIZE}" != "X" ] ; then
+	echo "set screen size"
+	sed -i -E 's/XVFBARGS="-screen 0 [0-9]+x[0-9]+x[0-9]+"/XVFBARGS="-screen 0 '${DESKTOP_SIZE}'x24"/' /bin/xvfb-run
+	grep "^XVFBARGS" /bin/xvfb-run
+fi
 
 # Init .xinitrc
 #printf 'autocutsel -fork -selection CLIPBOARD\nautocutsel -fork -selection PRIMARY\n' > ~/.xinitrc
@@ -69,19 +69,19 @@ fi
 #export PULSE_SERVER=unix:/run/user/$(id -u)/pulse/native
 
 # We start VNC server
-#export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
-# { 
-#  while [ 1 ] ; do
-#    figlet "x11vnc"
-#    x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS}
-#    sleep 1
-#  done
-#} &
+export FD_GEOM=${DESKTOP_SIZE}		# To init a screen display when using Xvfb
+{ 
+  while [ 1 ] ; do
+    figlet "x11vnc"
+    x11vnc -create -forever -repeat ${DESKTOP_VNC_PARAMS}
+    sleep 1
+  done
+} &
 
 # We start noVNC
-#figlet websockify
-#websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
-#WEBSOCKIFY_PID=$!
+figlet websockify
+websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 6080 localhost:5900 &
+WEBSOCKIFY_PID=$!
 
 # Run an apt update
 sudo apt-get update > /dev/null &

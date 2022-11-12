@@ -26,9 +26,8 @@ RUN     \
         && apt-get update                                  \
         && apt-get install -y --no-install-recommends      \
           libpulse0                                        \
-#          x11vnc                                           \
-#          xvfb                                             \
-          wayvnc                                           \
+          x11vnc                                           \
+          xvfb                                             \
           novnc                                            \
           websockify                                       \
         && apt-get clean                                   \
@@ -37,41 +36,14 @@ RUN     \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
         && echo "install VNC, noVNC and websockify OK" >&2
 
-# And finally xfce4 and ratpoison desktop environments
-# RUN     \
-#         echo "Install xfce4 and ratpoison" >&2             \
-#         && apt-get update                                  \
-#         && apt-get install -y --no-install-recommends      \
-#           dbus-x11                                         \
-#         && apt-get install -y                              \
-#           ratpoison                                        \
-#           xfce4 xfce4-terminal xfce4-eyes-plugin           \
-#           xfce4-systemload-plugin xfce4-weather-plugin     \
-#           xfce4-whiskermenu-plugin xfce4-clipman-plugin    \
-#           xserver-xorg-video-dummy                         \
-#         && apt-get clean                                   \
-#         && apt-get autoremove -y                           \
-#         && rm -rf /tmp/* /var/tmp/*                        \
-#         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
-#         && echo "Install xfce4 and ratpoison OK" >&2
-
 RUN     \
          echo "Install i3" >&2                              \
          && apt-get update                                  \
-#         && apt-get install -y --no-install-recommends      \
-#           dbus-x11                                         \
+         && apt-get install -y --no-install-recommends      \
+           dbus-x11                                         \
          && apt-get install -y                              \
            i3                                               \
-#           xserver-xorg-video-dummy                         \
-           sway                                             \
-           mesa-dri-gallium                                 \
-           seatd                                            \
-           xwayland             \
-           foot                 \ 
-           bemenu               \
-           swaylock swaylockd   \ 
-           swaybg               \ 
-           swayidle \
+           xserver-xorg-video-dummy                         \
          && apt-get clean                                   \
          && apt-get autoremove -y                           \
          && rm -rf /tmp/* /var/tmp/*                        \
@@ -92,6 +64,7 @@ RUN     \
           unzip                                            \
           ffmpeg                                           \
           mesa-utils                                       \
+          mesa-utils-extra                                 \
         && apt-get clean                                   \
         && apt-get autoremove -y                           \
         && rm -rf /tmp/* /var/tmp/*                        \
@@ -132,10 +105,10 @@ RUN     \
 EXPOSE  5900 6080 4444
 
 # We set localtime
-RUN      if [ "X${TZ}" != "X" ] ; then if [ -f /usr/share/zoneinfo/${TZ} ] ; then rm -f /etc/localtime ; ln -s /usr/share/zoneinfo/${TZ} /etc/localtime ; fi ; fi
+RUN if [ "X${TZ}" != "X" ] ; then if [ -f /usr/share/zoneinfo/${TZ} ] ; then rm -f /etc/localtime ; ln -s /usr/share/zoneinfo/${TZ} /etc/localtime ; fi ; fi
 
 # And here is the statup script, everything else is in there
-COPY    assets/entrypoint.sh /entrypoint.sh
+COPY    assets/entrypoint.i3.sh /entrypoint.sh
 RUN     chmod 755 /entrypoint.sh
 
 # We change user
