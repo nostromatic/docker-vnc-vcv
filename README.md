@@ -23,13 +23,20 @@ The final image size is 1.9Go.
 ## Prepare the host
 
 ### GPU support
-Install cuda for WSL
+Install cuda for WSL (NVIDIA GPU with Architecture >= Kepler)
 ```
 https://docs.nvidia.com/cuda/wsl-user-guide/index.html
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
 ```
 Then test it :
 ```
 sudo docker run --gpus all --env NVIDIA_DISABLE_REQUIRE=1 nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+sudo docker run --rm --gpus all nvidia/cuda:11.6.2-base-ubuntu20.04 nvidia-smi
+```
+inside a container:
+```
+user@7673554f575b:~$ nvidia-smi -L    
+GPU 0: NVIDIA GeForce RTX 2080 Ti (UUID: GPU-a30c3c6d-06d1-109c-0c63-54bf2c3824b4)
 ```
 
 Interesting doc: https://www.openrobots.org/morse/doc/latest/headless.html
