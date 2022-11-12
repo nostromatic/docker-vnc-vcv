@@ -27,8 +27,8 @@ RUN     \
         && apt-get install -y --no-install-recommends      \
           libpulse0                                        \
 #          x11vnc                                           \
+#          xvfb                                             \
           wayvnc                                           \
-          xvfb                                             \
           novnc                                            \
           websockify                                       \
         && apt-get clean                                   \
@@ -64,6 +64,14 @@ RUN     \
            i3                                               \
 #           xserver-xorg-video-dummy                         \
            sway                                             \
+           mesa-dri-gallium                                 \
+           seatd                                            \
+           xwayland             \
+           foot                 \ 
+           bemenu               \
+           swaylock swaylockd   \ 
+           swaybg               \ 
+           swayidle \
          && apt-get clean                                   \
          && apt-get autoremove -y                           \
          && rm -rf /tmp/* /var/tmp/*                        \
