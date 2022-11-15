@@ -36,9 +36,13 @@ if [ "X${DESKTOP_ENV}" = "Xvcv" ] ; then
 elif [ "X${DESKTOP_ENV}" = "Xi3" ] ; then
   echo "Configuring i3"
   # We run i3 at VNC server startup
-	echo "exec i3 >/dev/null 2>&1" >> ~/.xinitrc
+  #echo "exec i3 >/dev/null 2>&1" >> ~/.xinitrc
   mkdir -p ~/.config/i3
   cp /etc/i3/config ~/.config/i3/
+  
+  sudo bash /60-configure_gpu_driver.sh
+  sudo bash /70-configure_xorg.sh
+
   #echo "exec --no-startup-id i3-msg 'workspace 1:VCV; exec bash ~/Rack2Free/Rack.sh'" >> ~/.config/i3/config
   if [ "X${DESKTOP_KEYBOARD_LAYOUT}" != "X" ] ; then
     layout=$(echo ${DESKTOP_KEYBOARD_LAYOUT}|sed 's#/.*$##')

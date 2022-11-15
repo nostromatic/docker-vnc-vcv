@@ -1,4 +1,4 @@
-# This Docker file deploy wayland + sway + xwayland (no GPU support)
+# This Docker file deploy Xorg + i3 (with GPU support)
 FROM    ubuntu:jammy
 LABEL   maintainer=Nostromatic
 
@@ -7,13 +7,21 @@ ARG     TZ=${TZ:-Etc/UTC}
 ARG     LANG=${LANG:-en_US.UTF-8}
 ARG     DEBIAN_FRONTEND=noninteractive
 
-ENV VNC_LISTEN_ADDRESS="0.0.0.0" \
-    VNC_AUTH_ENABLE="false" \
-    VNC_KEYFILE="key.pem" \
-    VNC_CERT="cert.pem" \
-    VNC_PASS="$(pwgen -yns 8 1)"
+ENV \
+    DISPLAY_CDEPTH="24" \
+    DISPLAY_DPI="96" \
+    DISPLAY_REFRESH="60" \
+    DISPLAY_SIZEH="900" \
+    DISPLAY_SIZEW="1600" \
+    DISPLAY_VIDEO_PORT="DFP" \
+    DISPLAY=":55" \
+    NVIDIA_DRIVER_CAPABILITIES="all" \
+    NVIDIA_VISIBLE_DEVICES="all" \
+    XORG_SOCKET_DIR="/tmp/.X11-unix" \
+    XDG_RUNTIME_DIR="/tmp/.X11-unix/run"
 
-RUN     echo "Timezone and locale" >&2                     \
+RUN     \
+        echo "Timezone and locale" >&2                     \
         echo ${LANG} > /etc/default/locale                 \
         && apt-get update                                  \
         && apt-get install -y                              \
@@ -26,37 +34,70 @@ RUN     echo "Timezone and locale" >&2                     \
         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
         && echo "Timezone and locale OK" >&2
 
-# Second we install VNC, noVNC and websockify
-#RUN     \
-#        echo "install VNC, noVNC and websockify" >&2       \
-#        && apt-get update                                  \
-#        && apt-get install -y --no-install-recommends      \
-#          libpulse0                                        \
-#          x11vnc                                           \
-#          xvfb                                             \
-#          novnc                                            \
-#          websockify                                       \
-#        && apt-get clean                                   \
-#        && apt-get autoremove -y                           \
-#        && rm -rf /tmp/* /var/tmp/*                        \
-#        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
-#        && echo "install VNC, noVNC and websockify OK" >&2
+# Install X Server requirements
+RUN \
+    echo "**** Update apt database ****" \
+        && apt-get update \
+    && \
+    echo "**** Install i3 & X Server requirements ****" \
+        && apt-get install -y --no-install-recommends \
+            avahi-utils \
+            dbus-x11 \
+            libxcomposite-dev \
+            libxcursor1 \
+            x11-xfs-utils \
+            x11vnc \
+            xauth \
+            xfonts-base \
+            xorg \
+            xserver-xorg-core \
+            xserver-xorg-input-evdev \
+            xserver-xorg-input-libinput \
+            xserver-xorg-legacy \
+            xserver-xorg-video-all \
+            xserver-xorg-video-dummy \
+            xvfb \
+            i3 \
+    && \
+    echo "**** Section cleanup ****" \
+        && apt-get clean autoclean -y \
+        && apt-get autoremove -y \
+        && rm -rf \
+            /var/lib/apt/lists/* \
+            /var/tmp/* \
+            /tmp/* \
+    && \
+    echo
 
+# Second we install VNC, noVNC and websockify
 RUN     \
-         echo "Install sway" >&2                              \
-         && apt-get update                                  \
-#         && apt-get install -y --no-install-recommends      \
-#           dbus-x11                                         \
-         && apt-get install -y                              \
-           socat \
-           sway \
-           xwayland \
-           wayvnc \
-         && apt-get clean                                   \
-         && apt-get autoremove -y                           \
-         && rm -rf /tmp/* /var/tmp/*                        \
-         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
-         && echo "Install sway OK" >&2
+        echo "install VNC, noVNC and websockify" >&2       \
+        && apt-get update                                  \
+        && apt-get install -y --no-install-recommends      \
+          libpulse0                                        \
+          x11vnc                                           \
+          xvfb                                             \
+          novnc                                            \
+          websockify                                       \
+        && apt-get clean                                   \
+        && apt-get autoremove -y                           \
+        && rm -rf /tmp/* /var/tmp/*                        \
+        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
+        && echo "install VNC, noVNC and websockify OK" >&2
+
+# RUN     \
+#          echo "Install i3" >&2                              \
+#          && apt-get update                                  \
+# #         && apt-get install -y --no-install-recommends      \
+# #           dbus-x11                                         \
+#          && apt-get install -y                              \
+#            i3                                               \
+#            xserver-xorg-video-legacy                        \
+#          && apt-get clean                                   \
+#          && apt-get autoremove -y                           \
+#          && rm -rf /tmp/* /var/tmp/*                        \
+#          && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
+#          && echo "Install i3 OK" >&2
 
 # We add some tools
 RUN     \
@@ -64,17 +105,15 @@ RUN     \
         && apt-get update                                  \
         && apt-get install -y --no-install-recommends      \
           curl                                             \
-#          dumb-init                                        \
+          dumb-init                                        \
           figlet                                           \
-#          libnss3-tools                                    \
+          libnss3-tools                                    \
           sudo                                             \
           vim                                              \
           unzip                                            \
           ffmpeg                                           \
           mesa-utils                                       \
           mesa-utils-extra                                 \
-          rxvt-unicode                                     \
-          openssl                                          \
         && apt-get clean                                   \
         && apt-get autoremove -y                           \
         && rm -rf /tmp/* /var/tmp/*                        \
@@ -87,6 +126,7 @@ RUN     \
         && apt-get update                                  \
         && apt-get install -y --no-install-recommends      \
         zenity                                             \
+        pciutils \
         && apt-get clean                                   \
         && apt-get autoremove -y                           \
         && rm -rf /tmp/* /var/tmp/*                        \
@@ -117,35 +157,22 @@ EXPOSE  5900 6080 4444
 # We set localtime
 RUN if [ "X${TZ}" != "X" ] ; then if [ -f /usr/share/zoneinfo/${TZ} ] ; then rm -f /etc/localtime ; ln -s /usr/share/zoneinfo/${TZ} /etc/localtime ; fi ; fi
 
-# copy our custom Sway config to the default one
-COPY assets/sway.config /etc/sway/config
+COPY    assets/60-configure_gpu_driver.sh /60-configure_gpu_driver.sh
+RUN     chmod 755 /60-configure_gpu_driver.sh
+COPY    assets/70-configure_xorg.sh /70-configure_xorg.sh
+RUN     chmod 755 /70-configure_xorg.sh
 
-# Add wayvnc to compositor startup and put IPC on the network
-RUN echo "exec wayvnc 0.0.0.0 5900" >> /etc/sway/config.d/exec \
-    && echo "exec \"socat TCP-LISTEN:7023,fork UNIX-CONNECT:/tmp/sway-ipc.sock\"" >> /etc/sway/config.d/exec \
-    && mkdir -p /home/${USR}/.config/wayvnc/ \
-    && printf "\
-address=$VNC_LISTEN_ADDRESS\n\
-enable_auth=$VNC_AUTH_ENABLE\n\
-username=${USR}\n\
-password=$VNC_PASS\n\
-private_key_file=/home/${USR}/$VNC_KEYFILE\n\
-certificate_file=/home/${USR}/$VNC_CERT" > /home/${USR}/.config/wayvnc/config
-
-# Generate certificates for VNC
-RUN openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-	-keyout key.pem -out cert.pem -subj /CN=localhost \
-	-addext subjectAltName=DNS:localhost,DNS:localhost,IP:127.0.0.1
+RUN     mkdir -p /templates/xorg
+COPY    assets/xorg.dummy.conf /templates/xorg
 
 # And here is the statup script, everything else is in there
-COPY    assets/entrypoint.sway.sh /entrypoint.sh
+COPY    assets/entrypoint.gpu.sh /entrypoint.sh
 RUN     chmod 755 /entrypoint.sh
 
 # We change user
 USER    ${USR}
 WORKDIR /home/${USR}
 
-# Userlan installation of VCV Rack
 RUN     \
         echo "Install VCV Rack" >&2         \
         && curl https://vcvrack.com/downloads/RackFree-2.1.2-lin.zip -O \

@@ -1,4 +1,4 @@
-# First we get and update last Ubuntu image
+# This Docker file deploy xvfb + i3 (no GPU support)
 FROM    ubuntu:jammy
 LABEL   maintainer=Nostromatic
 
