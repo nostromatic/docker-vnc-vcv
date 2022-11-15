@@ -157,30 +157,25 @@ EXPOSE  5900 6080 4444
 # We set localtime
 RUN if [ "X${TZ}" != "X" ] ; then if [ -f /usr/share/zoneinfo/${TZ} ] ; then rm -f /etc/localtime ; ln -s /usr/share/zoneinfo/${TZ} /etc/localtime ; fi ; fi
 
-COPY    assets/60-configure_gpu_driver.sh /60-configure_gpu_driver.sh
-RUN     chmod 755 /60-configure_gpu_driver.sh
-COPY    assets/70-configure_xorg.sh /70-configure_xorg.sh
-RUN     chmod 755 /70-configure_xorg.sh
-
-RUN     mkdir -p /templates/xorg
-COPY    assets/xorg.dummy.conf /templates/xorg
+# Add FS overlay
+COPY overlay /
 
 # And here is the statup script, everything else is in there
 COPY    assets/entrypoint.gpu.sh /entrypoint.sh
 RUN     chmod 755 /entrypoint.sh
 
 # We change user
-USER    ${USR}
-WORKDIR /home/${USR}
+#USER    ${USR}
+# WORKDIR /home/${USR}
 
-RUN     \
-        echo "Install VCV Rack" >&2         \
-        && curl https://vcvrack.com/downloads/RackFree-2.1.2-lin.zip -O \
-        && unzip RackFree-2.1.2-lin.zip \
-        && rm -f RackFree-2.1.2-lin.zip \
-        && printf '#!/bin/bash\ncd ~/Rack2Free\n./Rack' > ~/Rack2Free/Rack.sh \
-        && rm -rf /tmp/* /var/tmp/*                        \
-        && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
-        && echo "VCV Rack OK" >&2
+# RUN     \
+#         echo "Install VCV Rack" >&2         \
+#         && curl https://vcvrack.com/downloads/RackFree-2.1.2-lin.zip -O \
+#         && unzip RackFree-2.1.2-lin.zip \
+#         && rm -f RackFree-2.1.2-lin.zip \
+#         && printf '#!/bin/bash\ncd ~/Rack2Free\n./Rack' > ~/Rack2Free/Rack.sh \
+#         && rm -rf /tmp/* /var/tmp/*                        \
+#         && rm -rf /var/lib/apt/lists/* /var/cache/apt/*    \
+#         && echo "VCV Rack OK" >&2
 
 ENTRYPOINT [ "/entrypoint.sh" ]

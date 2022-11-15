@@ -23,19 +23,26 @@ export intel_cpu_model="$(lscpu | grep 'Model name:' | grep -i intel | cut -d':'
 export amd_cpu_model="$(lscpu | grep 'Model name:' | grep -i amd | cut -d':' -f2 | xargs)"
 export amd_gpu_model="$(lspci | grep -i vga | grep -i amd)"
 
+echo "Drivers = $NVIDIA_DRV_URL"
+
 function download_driver {
     mkdir -p ${USER_HOME}/Downloads
     chown -R ${USER} ${USER_HOME}/Downloads
 
-    if [[ ! -f "${USER_HOME}/Downloads/NVIDIA_${nvidia_host_driver_version}.run" ]]; then
-        echo "Downloading driver v${nvidia_host_driver_version}"
-        wget -q --show-progress --progress=bar:force:noscroll \
-            -O /tmp/NVIDIA.run \
-            http://download.nvidia.com/XFree86/Linux-x86_64/${nvidia_host_driver_version}/NVIDIA-Linux-x86_64-${nvidia_host_driver_version}.run
-        [[ $? -gt 0 ]] && echo "Error downloading driver. Exit!" && return 1
-
-        mv /tmp/NVIDIA.run ${USER_HOME}/Downloads/NVIDIA_${nvidia_host_driver_version}.run
-    fi
+        if [ !-z $NVIDIA_DRV_URL ]; then
+            echo "Downloading (forced version) from $NVIDIA_DRV_URL"
+            wget -q --show-progress --progress=bar:force:noscroll \
+                -O /tmp/NVIDIA.run \
+                $NVIDIA_DRV_URL
+        else
+            echo "Downloading (detected version) from ${NVIDIA_DRV_URL}"
+            echo "http://download.nvidia.com/XFree86/Linux-x86_64/${nvidia_host_driver_version}/NVIDIA-Linux-x86_64-${nvidia_host_driver_version}.run"
+            wget -q --show-progress --progress=bar:force:noscroll \
+                -O /tmp/NVIDIA.run \
+                http://download.nvidia.com/XFree86/Linux-x86_64/${nvidia_host_driver_version}/NVIDIA-Linux-x86_64-${nvidia_host_driver_version}.run
+        fi
+        [[ -f /tmp/NVIDIA.run ]] && echo "Error downloading driver. Exit!" && exit 1
+        mv /tmp/NVIDIA.run ${USER_HOME}/Downloads/NVIDIA_${nvidia_host_driver_version}.runs
 }
 
 function install_nvidia_driver {
